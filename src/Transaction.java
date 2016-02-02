@@ -73,4 +73,9 @@ public class Transaction extends Trans{
     private void abc(){
 
     }
+
+    @Override
+    public String toString() {
+        return getIdProduct() + " " + getIdCustomer() + " " + getDate();
+    }
 }
