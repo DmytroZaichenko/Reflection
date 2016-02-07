@@ -2,9 +2,9 @@ package service;
 
 import java.util.Objects;
 
-public class Demo {
+public class Demo  {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Class[] classes = new Class[2];
         classes[0] = ClassNoService.class;
         classes[1] = ClassService.class;
