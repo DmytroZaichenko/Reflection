@@ -1,5 +1,6 @@
 package service;
 
+@Service
 public class ClassNoService{
     public ClassNoService() {
         System.out.println(toString());

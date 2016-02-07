@@ -1,48 +1,52 @@
 package service;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ApplicationManager {
 
-    public ApplicationManager(Class[] classes) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    public <T> T newService(Class<T> c)throws InstantiationException, IllegalAccessException, InvocationTargetException{
 
-        for (Class c : classes) {
-            Annotation[] annos = c.getAnnotations();
-            for (Annotation an : annos) {
+        T service = null;
 
-                if (an.annotationType().getName().equals(Service.class.getName())) {
+        Annotation[] annos = c.getAnnotations();
+        for (Annotation an : annos) {
+            if (an.annotationType().getName().equals(Service.class.getName())) {
+                return (T) c.getDeclaredConstructors()[0].newInstance();
+            }
+        }
 
-                    Object serv = c.getDeclaredConstructors()[0].newInstance();
+        return service;
+    }
 
-                    Method[] methods = serv.getClass().getDeclaredMethods();
+    private <T> void invokeMethod(T service) throws IllegalAccessException {
 
-                    for (Method met : methods ) {
+        Method[] methods = service.getClass().getDeclaredMethods();
 
-                        Annotation[] anMs  = met.getAnnotations();
+        for (Method met : methods) {
 
-                        for (Annotation anM : anMs) {
-                            if (anM.annotationType().getName().equals(InitService.class.getName())){
+            Annotation[] anMs = met.getAnnotations();
 
-                                boolean accessible = met.isAccessible();
-                                met.setAccessible(true);
-                                try {
-                                    met.invoke(serv);
-                                    met.setAccessible(accessible);
-                                }catch (InvocationTargetException e){
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+            for (Annotation anM : anMs) {
+                if (anM.annotationType().getName().equals(InitService.class.getName())) {
+
+                    boolean accessible = met.isAccessible();
+                    met.setAccessible(true);
+                    try {
+
+                        met.invoke(service);
+                        met.setAccessible(accessible);
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         }
     }
 
-    public Object getService(Class c){
-        return new Object();
-    }
+   public <T> T getService(Class<T> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException{
+       return newService(clazz);
+   }
+
 }
