@@ -1,0 +1,12 @@
+package service;
+
+public class ClassNoService{
+    public ClassNoService() {
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getName();
+    }
+}
