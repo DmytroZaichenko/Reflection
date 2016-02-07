@@ -41,4 +41,8 @@ public class ApplicationManager {
             }
         }
     }
+
+    public Object getService(Class c){
+        return new Object();
+    }
 }
