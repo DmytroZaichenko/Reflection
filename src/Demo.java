@@ -13,6 +13,19 @@ import java.util.*;
 
 public class Demo {
 
+    public Demo() {
+
+        Date d = getDate(0);
+        HashMap<String, Object> hm = new HashMap<>();
+        hm.put("idCustomer",23);
+        hm.put("idProduct",45);
+        hm.put("date",d);
+        hm.put("count",2.0);
+
+        //Transaction t = new InitClass<Transaction>(Transaction.class, hm);
+
+    }
+
     public static void main(String[] args) {
 
 //        printClassInfo(Transaction.class);
@@ -27,10 +40,9 @@ public class Demo {
 
         Transaction t = initClass(Transaction.class,hm);
 
+
+
         System.out.println(t.toString());
-
-
-
     }
 
     public static void printClassInfo(Class<?> c){
@@ -91,6 +103,47 @@ public class Demo {
         if (scl != null){
             printClassFields(scl);
         }
+    }
+
+    public class InitClass <T>{
+
+        private T t;
+
+        public InitClass(Class<T> c, HashMap<String, Object> map) {
+            t  = null;
+            Constructor[] ctors = c.getDeclaredConstructors();
+            Constructor ctor = ctors[0];
+            try {
+                t = (T) ctor.newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
+            for (Field field : c.getDeclaredFields()) {
+                String nameField = field.getName();
+                Object o = map.get(nameField);
+                if (o != null){
+
+                    boolean accessible = field.isAccessible();
+                    field.setAccessible(true);
+                    try {
+                        field.set(t , o);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    field.setAccessible(accessible);
+                }
+            }
+        }
+
+        public T getT(){
+           return t;
+        }
+
     }
 
     public static Transaction initClass(Class c, HashMap<String, Object> map) {
