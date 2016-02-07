@@ -3,42 +3,72 @@ package inst;
 import java.lang.reflect.*;
 import java.util.*;
 
-public class Ninstance {
+public class Demo {
 
+    private int intValue;
+    private String str;
+    public int accessible;
 
-    public Ninstance() {
+    public Demo() {
 
         HashMap<String, Object> hm = new HashMap<>();
         hm.put("idCustomer",23);
         hm.put("idProduct",45);
         hm.put("count",2.0);
 
-
-
-        List<Object> list = new ArrayList<>();
-        list.add(new Integer(23));
-        list.add(new Integer(45));
-        list.add(new Date());
-        list.add(new Double(2.4));
-
-        Transaction t = null;
-        try {
-            t = new InitClass<>(Transaction.class, list, hm).getT();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(t.toString());
+//        List<Object> list = new ArrayList<>();
+//        list.add(new Integer(23));
+//        list.add(new Integer(45));
+//        list.add(new Date());
+//        list.add(new Double(2.4));
+//
+//        Transaction t = null;
+//        try {
+//            t = new InitClass<>(Transaction.class, list, hm).getT();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        setPrivates(this,hm);
+        System.getSecurityManager();
+        System.out.println("");
 
     }
 
+    public void setPrivates(Object obj, HashMap<String, Object> hm){
+
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+
+            String nameField = field.getName();
+            Object o = hm.get(nameField);
+            if (o != null){
+
+                boolean accessible = field.isAccessible();
+                field.setAccessible(true);
+                try {
+                    field.set(obj , o);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                field.setAccessible(accessible);
+            }
+        }
+
+    }
+
+
+
     public static void main(String[] args) {
-        new Ninstance();
+        new Demo();
     }
 
     public class InitClass <T>{
 
         private T t;
+
+        public InitClass() {
+        }
+
 
         public InitClass(Class<T> c, HashMap<String, Object> map) {
             t  = null;
